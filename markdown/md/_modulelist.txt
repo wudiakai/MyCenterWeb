@@ -1,6 +1,9 @@
 Input
+audio
+--Effect
+--Focus
+--Volume
 VMS
 SourceMonitor
-说明
---EVSconfig说明
---换肤功能使用说明
+EVSconfig说明
+换肤功能使用说明

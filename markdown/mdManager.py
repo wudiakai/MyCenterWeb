@@ -5,18 +5,13 @@ import asyncio
 from dao.models import MyMarkdown
 
 TIME_INTERVAL = 30 * 60  # 30 minutes
-global loop
 
 
-async def getList():
-    return await MyMarkdown().all()
-
-
-async def updateDatabase(root: str, file: str):
+async def update_database(root: str, file: str):
     # print('------------------updateDatabase----------root:--', root, '  file:', file)
     filepath = os.path.join(root, file)
-    mtime = getFileMtime(filepath)
-    filename = getFileName(file)
+    mtime = get_file_m_time(filepath)
+    filename = get_file_name(file)
     res = await MyMarkdown.filter(name=filename)
     need: bool = False  # 是否插入/更新数据库
     if len(res) == 0:  # 不存在则插入
@@ -32,21 +27,21 @@ async def updateDatabase(root: str, file: str):
             pass
 
     if need:
-        str = read_markdown(filepath)
+        str = read_markdown_file(filepath)
         # print('content', str)
-        await MyMarkdown(name=getFileName(file),
+        await MyMarkdown(name=get_file_name(file),
                          last_modify=mtime,
                          content=str).save()
 
 
-async def syncSvn():
+async def sync_svn():
     print('------------sync svn------------------')
     # os.system("sh ./markdown/sync.sh")
     tasks = []
     for root, dirs, files in os.walk("./markdown/md/"):
         for file in files:
             if '.md' in file:
-                await updateDatabase(root, file)
+                await update_database(root, file)
                 # task = updateDatabase(root, file)
                 # tasks.append(task)
 
@@ -59,11 +54,11 @@ async def syncSvn():
     # loop.close()
 
 
-def getFileMtime(file: str):
+def get_file_m_time(file: str):
     return os.stat(file).st_mtime
 
 
-def getFileName(name: str):
+def get_file_name(name: str):
     return os.path.splitext(name)[0]
 
 
@@ -83,7 +78,13 @@ def getFileName(name: str):
 
 
 async def refresh():
-    await syncSvn()
+    await sync_svn()
+
+
+async def get_data_by_name(name: str):
+    res = await MyMarkdown().filter(name=name).first()
+    # print(res)
+    return res
 
 
 # def init(lo):
@@ -94,7 +95,7 @@ async def refresh():
 #     threading.Timer(30, runSyncScheduled).start()
 
 
-def read_markdown(name: str):
+def read_markdown_file(name: str):
     file = name
     if os.path.exists(file):
         f = open(file, encoding='utf-8')
@@ -103,7 +104,53 @@ def read_markdown(name: str):
         return ""
 
 
-async def getDataByName(name: str):
-    res = await MyMarkdown().filter(name=name).first()
-    # print(res)
+def read_markdown_list(item: str):
+    files = {
+        'module': './markdown/md/_modulelist.txt',
+    }
+
+    file = files[item]
+    return read_markdown_list_file(file)
+
+
+def read_markdown_list_file(file: str):
+    if os.path.exists(file):
+        lst = []
+        index = 0
+
+        sublst = []
+        for line in open(file, encoding='utf-8'):
+            # line = f.readline()
+            line = line.replace('\n', '')
+            if (line.startswith('--')):
+                sublst.append(line.replace('-', ''))
+            else:
+                if len(sublst) > 0:
+                    index = len(lst) - 1
+                    lst[index]['sublist'] = sublst
+                    lst[index]['submenu'] = True
+                    sublst = []
+                map = {}
+                map['submenu'] = False
+                map['title'] = line
+                lst.append(map)
+
+        if len(sublst) > 0:
+            index = len(lst) - 1
+            lst[index]['sublist'] = sublst
+            lst[index]['submenu'] = True
+            sublst = []
+
+        print(lst)
+        return lst
+
+    else:
+        return ""
+
+
+async def search(text):
+    res = await MyMarkdown().filter(name__icontains=text)
+    print(res)
+    for a in res:
+        print(a.name)
     return res

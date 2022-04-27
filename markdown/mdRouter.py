@@ -7,15 +7,26 @@ router = APIRouter()
 
 
 @router.get("/sync")
-async def syncSvn():
+async def sync_svn():
+    """sync from svn """
     await mdManager.refresh()
     return {"msg", "OK"}
 
 
+@router.get("/markdownList/{item}")
+async def get_md_list(item: str):
+    return mdManager.read_markdown_list(item)
+
+
+@router.get("/search/{text}")
+async def search_text(text: str):
+    res = await mdManager.search(text)
+    return res
+
 @router.get("/content/{name}")
-async def getContent(name: str):
-    res = await mdManager.getDataByName(name)
+async def get_content(name: str):
+    res = await mdManager.get_data_by_name(name)
     if isinstance(res, MyMarkdown):
-        return res.content
+        return {'data', res.content}
     else:
-        return "This article was not found!"
+        return {'data': "This article was not found!"}

@@ -5,11 +5,13 @@ from fastapi import FastAPI, UploadFile, File
 import uvicorn
 from tortoise.contrib.fastapi import register_tortoise
 
+import tools.toolsRouter
 from dao.models import MyMarkdown
 from markdown import mdRouter
 
 app = FastAPI()
 app.include_router(mdRouter.router)
+app.include_router(tools.toolsRouter.router)
 register_tortoise(app,
                   # db_url="mysql://likai:!QAZ1qaz@localhost:3306/fastapi",
                   db_url="mysql://root:123456@localhost:3306/fastapi",
@@ -26,6 +28,7 @@ async def index():
     print(res[0].content)
     print(type(res))
     return "Welcome to Android Center!"
+
 
 def init():
     # mdManager.init()
