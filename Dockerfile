@@ -7,6 +7,8 @@ ADD . /app
 # 设置时间
 # RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 # 安装所需的包，这里的requirements文件名需和项目生成的一致
-RUN pip install --trusted-host pypi.douban.com -r requirements.txt -i http://pypi.douban.com/simple
+RUN pip3 install -r requirements.txt -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
 # 执行入口文件
 CMD ["python", "main.py"]
+
+# docker build --network=host -t centerserver:v1 .

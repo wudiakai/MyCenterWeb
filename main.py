@@ -14,8 +14,7 @@ app = FastAPI()
 app.include_router(mdRouter.router)
 app.include_router(tools.toolsRouter.router)
 register_tortoise(app,
-                  # db_url="mysql://likai:!QAZ1qaz@localhost:3306/fastapi",
-                  db_url="mysql://root:123456@localhost:3306/fastapi",
+                  db_url="mysql://likai:!QAZ1qaz@localhost:3306/fastapi",
                   modules={"models": ["dao.models"]},
                   add_exception_handlers=True,
                   generate_schemas=True)
