@@ -21,8 +21,9 @@ async def make_config(req: Request, file: UploadFile = File(...)):
     # todo: 增加session控制每次会话，避免重复处理
     res = await tools.toolsDispatcher.dispatcher('config', file)
     if res == 'OK':
-        out_file = await toolsDispatcher.get_out_file('config')
-        return FileResponse(path=out_file, filename='config.zip')
+        # out_file = await toolsDispatcher.get_out_file('config')
+        # return FileResponse(path=out_file, filename='config.zip')
+        return {"msg": 'OK'}
     else:
         return {"msg": res}
 

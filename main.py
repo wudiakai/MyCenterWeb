@@ -3,6 +3,7 @@ import threading
 
 from fastapi import FastAPI, UploadFile, File
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
 from tortoise.contrib.fastapi import register_tortoise
 
 import tools.toolsRouter
@@ -18,6 +19,23 @@ register_tortoise(app,
                   modules={"models": ["dao.models"]},
                   add_exception_handlers=True,
                   generate_schemas=True)
+
+origins = [
+     "http://10.1.29.*:*",
+    "http://10.1.29.11:2020",
+    "http://10.1.79.81:2020",
+    # "http://localhost",
+    # "http://localhost:2020",
+    # "http://localhost:2020",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
