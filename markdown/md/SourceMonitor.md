@@ -1,4 +1,4 @@
-# SourceMonitor
+# SourceMonitor功能说明
 
 ## 1.功能
 
@@ -34,7 +34,7 @@
 - Start app
 - 判断应用是否在前台
 - 判断服务是否已启动
-- 等
+- 可扩展
 
 ### 4） 退栈策略
 

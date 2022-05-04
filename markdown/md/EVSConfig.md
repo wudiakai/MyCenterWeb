@@ -1,4 +1,4 @@
-# EVS config说明
+# EVS config使用说明
 
 ## config文件位置
 

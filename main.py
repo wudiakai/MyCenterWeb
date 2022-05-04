@@ -1,26 +1,23 @@
-import asyncio
-import threading
-
 from fastapi import FastAPI, UploadFile, File
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from tortoise.contrib.fastapi import register_tortoise
 
 import tools.toolsRouter
-from dao.models import MyMarkdown
-from markdown import mdRouter
+from markdown import mdRouter, mdManager
 
 app = FastAPI()
 app.include_router(mdRouter.router)
 app.include_router(tools.toolsRouter.router)
 register_tortoise(app,
-                  db_url="mysql://likai:!QAZ1qaz@localhost:3306/fastapi",
+                  db_url="mysql://likai:!QAZ1qaz@127.0.0.1:3306/fastapi",
+                  # db_url="mysql://likai:!QAZ1qaz@localhost:3306/fastapi",
                   modules={"models": ["dao.models"]},
                   add_exception_handlers=True,
                   generate_schemas=True)
 
 origins = [
-     "http://10.1.29.*:*",
+    "http://10.1.29.*:*",
     "http://10.1.29.11:2020",
     "http://10.1.79.81:2020",
     # "http://localhost",
@@ -39,17 +36,12 @@ app.add_middleware(
 
 @app.get("/")
 async def index():
-    res = await MyMarkdown().all()
-    print(res)
-    print(len(res))
-    print(res[0].content)
-    print(type(res))
     return "Welcome to Android Center!"
 
 
+@app.on_event('startup')
 def init():
-    # mdManager.init()
-    pass
+    mdManager.init()
 
 
 if __name__ == '__main__':

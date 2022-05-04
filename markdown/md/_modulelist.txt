@@ -5,5 +5,5 @@ audio
 --Volume
 VMS
 SourceMonitor
-EVSconfig说明
-换肤功能使用说明
+EVSConfig
+SkinChange
