@@ -1,3 +1,5 @@
+import logging
+
 import pandas as pd
 import csv
 import zipfile
@@ -88,8 +90,8 @@ def make_rc_file(ls, out_path):
     pass
 
 
-def zip_files(path: str):
-    zip_file = zipfile.ZipFile(os.path.join(path, 'config.zip'), 'w')
+def zip_files(path: str, name):
+    zip_file = zipfile.ZipFile(os.path.join(path, name + '.zip'), 'w')
     for root, dirs, files in os.walk(path):
         for file in files:
             if not file.endswith('zip'):
@@ -98,6 +100,8 @@ def zip_files(path: str):
 
 
 def get_out_file(session: str):
+    logging.log(logging.INFO, 'session :' + session)
+    print(session)
     global out_files
     return out_files[session]
 
@@ -107,8 +111,9 @@ def make_config(path: str, file: str):
     ls = []
 
     out_path = os.path.join(path, PATH_OUT)
-    if not os.path.exists(out_path):
-        os.system('mkdir ' + out_path)
+    print('------------------------' + out_path)
+    if out_path != '' and not os.path.exists(out_path):
+        os.system('mkdir -p ' + out_path)
 
     temp_file = os.path.join(path, FILENAME_CSV)
     is_config_file = False
@@ -125,10 +130,9 @@ def make_config(path: str, file: str):
     make_java_mapFile(ls, out_path)
     make_rc_file(ls, out_path)
 
-    zip_files(out_path)
+    zip_files(out_path, 'config')
     global out_files
     out_files['config'] = os.path.join(out_path, 'config.zip')
-    print(out_files['config'])
 
     return 'OK'
 

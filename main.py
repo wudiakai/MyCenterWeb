@@ -1,7 +1,10 @@
+import logging
+
 from fastapi import FastAPI, UploadFile, File
 import uvicorn
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 from tortoise.contrib.fastapi import register_tortoise
+from fastapi.staticfiles import StaticFiles
 
 import tools.toolsRouter
 from markdown import mdRouter, mdManager
@@ -17,13 +20,19 @@ register_tortoise(app,
                   generate_schemas=True)
 
 origins = [
-    "http://10.1.29.*:*",
     "http://10.1.29.11:2020",
     "http://10.1.79.81:2020",
-    # "http://localhost",
-    # "http://localhost:2020",
-    # "http://localhost:2020",
+    "http://localhost:2020",
+    "http://10.1.29.11:80",
+    "http://10.1.79.81:80",
+    "http://localhost:80",
+    "http://10.1.29.11",
+    "http://10.1.79.81",
+    "http://localhost",
 ]
+
+app.mount("/img", StaticFiles(directory="./markdown/md/image"), name="img")
+app.mount("/base", StaticFiles(directory="./resource"), name="base")
 
 app.add_middleware(
     CORSMiddleware,
@@ -32,6 +41,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+logging.basicConfig(format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+                    level=logging.DEBUG,
+                    filename='running.log',
+                    filemode='a')
 
 
 @app.get("/")

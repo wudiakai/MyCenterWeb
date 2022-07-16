@@ -1,7 +1,10 @@
+import logging
 import os.path
 import asyncio
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import re
 
+from constant import BASE_URL
 from dao.models import MyMarkdown
 
 TIME_INTERVAL = 30 * 60  # 30 minutes
@@ -24,14 +27,20 @@ async def update_database(root: str, file: str):
             need = 'update'
         else:
             print('[', filename, '] is already up to date.')
+            logging.log(logging.INFO, '[', filename, '] is already up to date.')
             pass
 
     if need == 'create':
         s = read_markdown_file(filepath)
-        print('create [', filename, '] data')
-        await MyMarkdown(name=get_file_name(file),
-                         last_modify=mtime,
-                         content=s).save()
+        print('create [', filename, '] data.  length=' + str(len(s)))
+        logging.log(logging.INFO, 'create [', filename, '] data.  length=' + str(len(s)))
+        try:
+            await MyMarkdown(name=get_file_name(file),
+                             last_modify=mtime,
+                             content=s).save()
+        except Exception as e:
+            print('【Error】 ' + filename + ' create db failed!   length = ' + str(len(s)))
+            logging.log(logging.ERROR, filename + ' create db failed!   length = ' + str(len(s)))
     elif need == 'update':
         s = read_markdown_file(filepath)
         data = {
@@ -41,12 +50,15 @@ async def update_database(root: str, file: str):
             'last_modify': mtime
 
         }
+        logging.log(logging.INFO, '[', filename, '] has been updated.')
         print('[', filename, '] has been updated.')
+
         await MyMarkdown(**data).save(force_update=True)
 
 
 async def sync_svn():
     print('------------sync svn------------------')
+    logging.log(logging.INFO, '------------sync svn------------------')
     os.system("sh ./markdown/sync.sh")
     tasks = []
     for root, dirs, files in os.walk("./markdown/md/"):
@@ -81,7 +93,33 @@ async def refresh():
 
 async def get_data_by_name(name: str):
     res = await MyMarkdown().filter(name=name).first()
+    res.content = filter_img(res.content)
+    res.content = filter_img2(res.content)
+    res.content = filter_video(res.content)
     return res
+
+
+def filter_img(data: str):
+    src = re.compile(r"\(.*(?:image/|image\\)")
+
+    return src.sub("(" + BASE_URL + "/img/", data)
+
+
+def filter_img2(data: str):
+    src = re.compile(r"\".*(?:image/|image\\)")
+
+    return src.sub("\"" + BASE_URL + "/img/", data)
+
+
+# def filter_img(data: str):
+#     src = re.compile("\(.*/image")
+#
+#     return src.sub("(" + BASE_URL + "/img", data)
+
+
+def filter_video(data: str):
+    src = re.compile("<video")
+    return src.sub("<video width=\"100%\"", data)
 
 
 def read_markdown_file(name: str):
@@ -96,6 +134,7 @@ def read_markdown_file(name: str):
 def read_markdown_list(item: str):
     files = {
         'module': './markdown/md/_modulelist.txt',
+        'feature': './markdown/md/_featureList.txt',
     }
 
     file = files[item]
@@ -124,9 +163,10 @@ def read_markdown_list_file(file: str):
             index = len(lst) - 1
             lst[index]['sublist'] = sublst
             lst[index]['submenu'] = True
-            sublst.clear()
+            sublst = []
 
-        print(lst)
+        print('list :' + str(lst))
+        logging.log(logging.INFO, 'list :' + str(lst))
         return lst
 
     else:

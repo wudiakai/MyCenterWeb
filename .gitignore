@@ -12,3 +12,5 @@ markdown/md/.svn/pristine/bb/bbf8a236c9d4f8e96a897cf0854b88b2432c0571.svn-base
 tools/__pycache__/toolsRouter.cpython-310.pyc
 markdown/__pycache__/mdManager.cpython-310.pyc
 markdown/__pycache__/mdRouter.cpython-310.pyc
+.svn
+markdown/md
