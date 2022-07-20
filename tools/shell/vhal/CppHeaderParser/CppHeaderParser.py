@@ -88,14 +88,14 @@ def error_print(fmt, *args):
     if print_errors:
         fmt = "[%4d] " + fmt
         args = (inspect.currentframe().f_back.f_lineno,) + args
-        print(fmt % args)
+        # print(fmt % args)
 
 
 def warning_print(fmt, *args):
     if print_warnings:
         fmt = "[%4d] " + fmt
         args = (inspect.currentframe().f_back.f_lineno,) + args
-        print(fmt % args)
+        # print(fmt % args)
 
 
 if debug:
@@ -109,7 +109,7 @@ if debug:
     def debug_print(fmt, *args):
         fmt = "[%4d] " + fmt
         args = (inspect.currentframe().f_back.f_lineno,) + args
-        print(fmt % args)
+        # print(fmt % args)
 
 
 else:
@@ -123,10 +123,11 @@ else:
 if debug_trace:
 
     def trace_print(*args):
-        sys.stdout.write("[%s]" % (inspect.currentframe().f_back.f_lineno))
+        # sys.stdout.write("[%s]" % (inspect.currentframe().f_back.f_lineno))
         for a in args:
-            sys.stdout.write(" %s" % a)
-        sys.stdout.write("\n")
+            # sys.stdout.write(" %s" % a)
+            pass
+        # sys.stdout.write("\n")
 
 
 else:
@@ -444,7 +445,7 @@ def _consume_parens(stack):
 
 
 def _parse_template_decl(stack):
-    debug_print("_parse_template_decl: %s", stack)
+    # debug_print("_parse_template_decl: %s", stack)
     params = []
     param = CppTemplateParam()
     i = 0
@@ -535,7 +536,7 @@ def _parse_cppclass_name(c, stack):
             name = "<" + name + ">"
     c["name"] = name
     c["bare_name"] = name
-    debug_print("Found class '%s'", name)
+    # debug_print("Found class '%s'", name)
 
     # backwards compat
     classParams = c.get("class_params")
@@ -546,7 +547,7 @@ def _parse_cppclass_name(c, stack):
 
 
 def _parse_cpp_base(stack, default_access):
-    debug_print("Parsing base: %s (access %s)", stack, default_access)
+    # debug_print("Parsing base: %s (access %s)", stack, default_access)
     inherits = []
     i = 0
     sl = len(stack)
@@ -714,8 +715,8 @@ class CppClass(dict):
         self["namespace"] = ""
         self["using"] = {}
 
-        debug_print("Class:    %s", nameStack)
-        debug_print("Template: %s", curTemplate)
+        # debug_print("Class:    %s", nameStack)
+        # debug_print("Template: %s", curTemplate)
 
         if len(nameStack) < 2:
             nameStack.insert(1, "")  # anonymous struct
@@ -736,7 +737,7 @@ class CppClass(dict):
 
         if curTemplate:
             self["template"] = curTemplate
-            trace_print("Setting template to", self["template"])
+            # trace_print("Setting template to", self["template"])
 
         methodAccessSpecificList = {}
         propertyAccessSpecificList = {}
@@ -801,7 +802,7 @@ class CppClass(dict):
             for method in self["methods"][accessSpecifier]:
                 rtn += "\t\t" + method.show() + "\n"
         rtn += "  }\n"
-        print(rtn)
+        # print(rtn)
 
     def __str__(self):
         """Convert class to a string"""
@@ -864,7 +865,7 @@ class CppUnion(CppClass):
         self["members"] = self["properties"]["public"]
 
     def transform_to_union_keys(self):
-        print("union keys: %s" % list(self.keys()))
+        # print("union keys: %s" % list(self.keys()))
         for key in [
             "inherits",
             "parent",
@@ -877,7 +878,8 @@ class CppUnion(CppClass):
 
     def show(self):
         """Convert class to a string"""
-        print(self)
+        # print(self)
+        pass
 
     def __str__(self):
         """Convert class to a string"""
@@ -992,8 +994,8 @@ class CppMethod(_CppMethod):
         return "\n\t\t  ".join(r)
 
     def __init__(self, nameStack, curClass, methinfo, curTemplate, doxygen, location):
-        debug_print("Method:   %s", nameStack)
-        debug_print("Template: %s", curTemplate)
+        # debug_print("Method:   %s", nameStack)
+        # debug_print("Template: %s", curTemplate)
 
         if doxygen:
             self["doxygen"] = doxygen
@@ -1068,10 +1070,10 @@ class CppMethod(_CppMethod):
 
         paramsStack = self._params_helper1(nameStack)
 
-        debug_print("curTemplate: %s", curTemplate)
+        # debug_print("curTemplate: %s", curTemplate)
         if curTemplate:
             self["template"] = curTemplate
-            debug_print("SET self['template'] to `%s`", self["template"])
+            # debug_print("SET self['template'] to `%s`", self["template"])
 
         params = []
         # See if there is a doxygen comment for the variable
@@ -1210,7 +1212,7 @@ class CppVariable(_CppVariable):
     Vars = []
 
     def __init__(self, nameStack, doxygen, location, **kwargs):
-        debug_print("var trace %s", nameStack)
+        # debug_print("var trace %s", nameStack)
         if len(nameStack) and nameStack[0] == "extern":
             self["extern"] = True
             del nameStack[0]
@@ -1221,8 +1223,8 @@ class CppVariable(_CppVariable):
         if "[" in nameStack:  # strip off array informatin
             arrayStack = nameStack[nameStack.index("[") :]
             if nameStack.count("[") > 1:
-                debug_print("Multi dimensional array")
-                debug_print("arrayStack=%s", arrayStack)
+                # debug_print("Multi dimensional array")
+                # debug_print("arrayStack=%s", arrayStack)
                 nums = [x for x in arrayStack if x.isdigit()]
                 # Calculate size by multiplying all dimensions
                 p = 1
@@ -1233,7 +1235,7 @@ class CppVariable(_CppVariable):
                 self["multi_dimensional_array"] = 1
                 self["multi_dimensional_array_size"] = "x".join(nums)
             else:
-                debug_print("Array")
+                # debug_print("Array")
                 if len(arrayStack) == 3:
                     self["array_size"] = arrayStack[1]
             nameStack = nameStack[: nameStack.index("[")]
@@ -1245,7 +1247,7 @@ class CppVariable(_CppVariable):
         if doxygen:
             self["doxygen"] = doxygen
 
-        debug_print("Variable: %s", nameStack)
+        # debug_print("Variable: %s", nameStack)
 
         set_location_info(self, location)
         self["function_pointer"] = 0
@@ -1776,12 +1778,12 @@ class Resolver(object):
                             var["fundamental"] = True
 
                         elif var["parent"] and var["unresolved"]:
-                            warning_print("WARN unresolved %s", _tag)
+                            # warning_print("WARN unresolved %s", _tag)
                             var["ctypes_type"] = "ctypes.c_void_p"
                             var["unresolved"] = True
 
                         elif tag.count("::") == 1:
-                            trace_print("trying to find nested something in", tag)
+                            # trace_print("trying to find nested something in", tag)
                             a = tag.split("::")[0]
                             b = tag.split("::")[-1]
                             if (
@@ -1789,7 +1791,7 @@ class Resolver(object):
                             ):  # a::b is most likely something nested in a class
                                 klass = self.classes[a]
                                 if b in klass._public_enums:
-                                    trace_print("...found nested enum", b)
+                                    # trace_print("...found nested enum", b)
                                     enum = klass._public_enums[b]
                                     etype = enum.get("type")
                                     if etype is int:
@@ -1820,8 +1822,8 @@ class Resolver(object):
                             ):  # a::b can also be a nested namespace
                                 if b in self.global_enums:
                                     enum = self.global_enums[b]
-                                    trace_print(enum)
-                                trace_print(var)
+                                    # trace_print(enum)
+                                # trace_print(var)
                                 assert 0
 
                             elif (
@@ -1839,9 +1841,9 @@ class Resolver(object):
                                 var["fundamental"] = True
 
                             else:  # boost::gets::crazy
-                                trace_print("NAMESPACES", self.namespaces)
-                                trace_print(a, b)
-                                trace_print("---- boost gets crazy ----")
+                                # trace_print("NAMESPACES", self.namespaces)
+                                # trace_print(a, b)
+                                # trace_print("---- boost gets crazy ----")
                                 var["ctypes_type"] = "ctypes.c_void_p"
                                 var["unresolved"] = True
 

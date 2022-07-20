@@ -52,7 +52,7 @@ class CppHeaderGenerator:
                 MAX_SAMPLE_RATE=dcData.getMaxSampleRate(),
                 INIT_VALUES=dcData.getInitValues()))
             lines.append('\n')
-            print('debug lins#################################')
+            # print('debug lins#################################')
             for x in lines:
                 result  = re.sub("[\r\n]+", "\n", x)
                 self.__headerFile.writelines(result)

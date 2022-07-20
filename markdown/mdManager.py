@@ -27,13 +27,13 @@ async def update_database(root: str, file: str):
             need = 'update'
         else:
             print('[', filename, '] is already up to date.')
-            logging.log(logging.INFO, '[', filename, '] is already up to date.')
+            logging.log(logging.INFO, '[' + filename + '] is already up to date.')
             pass
 
     if need == 'create':
         s = read_markdown_file(filepath)
         print('create [', filename, '] data.  length=' + str(len(s)))
-        logging.log(logging.INFO, 'create [', filename, '] data.  length=' + str(len(s)))
+        logging.log(logging.INFO, 'create [' + filename + '] data.  length=' + str(len(s)))
         try:
             await MyMarkdown(name=get_file_name(file),
                              last_modify=mtime,
@@ -50,7 +50,7 @@ async def update_database(root: str, file: str):
             'last_modify': mtime
 
         }
-        logging.log(logging.INFO, '[', filename, '] has been updated.')
+        logging.log(logging.INFO, '[' + filename + '] has been updated.')
         print('[', filename, '] has been updated.')
 
         await MyMarkdown(**data).save(force_update=True)

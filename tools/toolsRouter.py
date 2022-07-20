@@ -41,6 +41,26 @@ async def make_vhal(req: Request, file: UploadFile = File(...)):
         return {"msg": res}
 
 
+@router.post("/audiofocus")
+async def make_audioFocus(req: Request, file: UploadFile = File(...)):
+    # todo: 增加session控制每次会话，避免重复处理
+    res = await tools.toolsDispatcher.dispatcher('audiofocus', file)
+    if res == 'OK':
+        return {"msg": 'OK'}
+    else:
+        return {"msg": res}
+
+
+@router.post("/audiomix")
+async def make_audiomix(req: Request, file: UploadFile = File(...)):
+    # todo: 增加session控制每次会话，避免重复处理
+    res = await tools.toolsDispatcher.dispatcher('audiomix', file)
+    if res == 'OK':
+        return {"msg": 'OK'}
+    else:
+        return {"msg": res}
+
+
 @router.get("/config/{session}")
 async def get_out_files(req: Request, session: str):
     file = await toolsDispatcher.get_out_file(session)

@@ -68,12 +68,14 @@ def generateModuleConfigs(xlsPath, outPath, dataSheetName, templateNameSheet):
 def makeFolder():
     global g_out_path
     folder = tempfile.gettempdir()
-    g_out_path = os.path.join(folder, 'tmp_file', str(int(time.time())))
-
+    g_out_path = os.path.join(folder, 'tmp_file', str(int(time.time()))) + os.sep
+    if not os.path.exists(g_out_path):
+        os.system('mkdir -p ' + g_out_path)
 
 
 def outFolder():
     global g_out_path
+    print(" output folder:" + g_out_path)
     return g_out_path
 
 
@@ -131,7 +133,7 @@ def main():
     if len(sys.argv) > 1:
         file = sys.argv[1]
         if len(sys.argv) > 2:
-            g_out_path = sys.argv[2]
+            g_out_path = sys.argv[2] + os.sep
     else:
         print("请指定转换文件!")
         return

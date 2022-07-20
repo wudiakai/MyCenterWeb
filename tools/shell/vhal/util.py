@@ -1,11 +1,13 @@
 # encoding: utf-8
 
 def dumpAll(datas):
-    print("dump all###########################:")
+    # print("dump all###########################:")
     for i in range(0, len(datas)):
-        datas[i].dump()
+        # datas[i].dump()
+        pass
 
 
 def dump(x):
-    print("###########################:")
-    print(x)
+    pass
+    # print("###########################:")
+    # print(x)

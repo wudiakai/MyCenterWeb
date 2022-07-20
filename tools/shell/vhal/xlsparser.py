@@ -4,8 +4,8 @@ import xlrd
 import util
 
 import sys
-import importlib
-importlib.reload(sys)
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 class TemplatesData:
     def __init__(self):
